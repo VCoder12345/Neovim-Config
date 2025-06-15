@@ -17,7 +17,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 
-local opts = {}
 vim.diagnostic.config {
   virtual_text = true,
   underline = true,
@@ -30,7 +29,6 @@ vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertL
     vim.diagnostic.show()
   end,
 })
-  
 require("lazy").setup("plugins")
 require("vim-options")
 
