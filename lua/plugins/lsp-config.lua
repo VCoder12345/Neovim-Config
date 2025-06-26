@@ -1,7 +1,8 @@
 return {
   {
     "mason-org/mason.nvim",
-    opts = {},
+    opts = {
+    },
   },
   {
     "mason-org/mason-lspconfig.nvim",
@@ -15,6 +16,7 @@ return {
         "html",
         "cssls",
         "jsonls",
+        "neocmake",
       },
     },
     dependencies = {
@@ -60,6 +62,10 @@ return {
         capabilities = capabilities,
       })
       lspconfig.jsonls.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.neocmake.setup({
         capabilities = capabilities,
       })
       local keymap = vim.keymap
