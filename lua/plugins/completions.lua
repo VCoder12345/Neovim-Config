@@ -26,6 +26,10 @@ return {
       local lspkind = require("lspkind")
       require("luasnip.loaders.from_vscode").lazy_load()
 
+      -- vim.keymap.set({"i", "s"}, "<Tab>", function ()
+      --   return require("luasnip").jump(1)
+      -- end, {expr = true})
+
       vim.opt.pumheight = 15
 
       cmp.setup({
@@ -50,9 +54,18 @@ return {
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
           ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            local luasnip = require("luasnip")
+            if luasnip.jumpable(1) then
+              luasnip.jump(1)
+            else
+              fallback()
+            end
+          end, { "i", "s" }
+          )
         }),
         sources = cmp.config.sources({
-          {name = "nvim_lsp_signature_help"},
+          { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
           --{ name = "vsnip" }, -- For vsnip users.
           { name = "luasnip" }, -- For luasnip users.
