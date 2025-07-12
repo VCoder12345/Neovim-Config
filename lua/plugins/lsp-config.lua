@@ -45,6 +45,7 @@ return {
 
       lspconfig.clangd.setup({
         capabilities = capabilities,
+        cmd = {"clangd", "--background-index"},
       })
 
       lspconfig.ts_ls.setup({
