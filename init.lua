@@ -31,5 +31,7 @@ vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertL
 })
 require("lazy").setup("plugins")
 require("vim-options")
+require("custom/genCpp")
+require("custom/fastCmake")
 
 
