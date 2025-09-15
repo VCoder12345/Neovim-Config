@@ -11,6 +11,6 @@ return {
 
 		local kp = vim.keymap
 
-		kp.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "format buffer" })
+		kp.set("n", "<leader>rf", vim.lsp.buf.format, { desc = "format buffer" })
 	end,
 }
