@@ -13,7 +13,7 @@ return {
 			},
 		})
 
-		local kp = vim.keymap
+    local kp = vim.keymap
 
 		kp.set("n", "<leader>rf", vim.lsp.buf.format, { desc = "format buffer" })
 	end,

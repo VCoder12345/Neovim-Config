@@ -42,12 +42,22 @@ return {
       --vim.lsp.enable("lua_ls")
       --vim.lsp.enable("rust_analyzer")
       --vim.lsp.enable("clangd")
+      --vim.lsp.enable("lua_ls")
+      --vim.lsp.enable("rust_analyzer")
+      --vim.lsp.enable("clangd")
 
       local lspconfig = require("lspconfig")
       lspconfig.lua_ls.setup({
         capabilities = capabilities,
       })
+      local lspconfig = require("lspconfig")
+      lspconfig.lua_ls.setup({
+        capabilities = capabilities,
+      })
 
+      lspconfig.rust_analyzer.setup({
+        capabilities = capabilities,
+      })
       lspconfig.rust_analyzer.setup({
         capabilities = capabilities,
       })
@@ -83,11 +93,48 @@ return {
           )(fname) or require("lspconfig.util").find_git_ancestor(fname)
         end,
       })
+      lspconfig.clangd.setup({
+        capabilities = capabilities,
+        cmd = {
+          "clangd",
+          "--background-index",
+          "--clang-tidy",
+          "--header-insertion=iwyu",
+          "--completion-style=detailed",
+          "--function-arg-placeholders",
+          "--fallback-style=llvm",
+        },
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+        },
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern(
+            "Makefile",
+            "configure.ac",
+            "configure.in",
+            "config.h.in",
+            "meson.build",
+            "meson_options.txt",
+            "build.ninja"
+          )(fname) or require("lspconfig.util").root_pattern(
+            "compile_commands.json",
+            "compile_flags.txt"
+          )(fname) or require("lspconfig.util").find_git_ancestor(fname)
+        end,
+      })
 
       lspconfig.ts_ls.setup({
         capabilities = capabilities,
       })
+      lspconfig.ts_ls.setup({
+        capabilities = capabilities,
+      })
 
+      lspconfig.angularls.setup({
+        capabilities = capabilities,
+      })
       lspconfig.angularls.setup({
         capabilities = capabilities,
       })
@@ -101,7 +148,19 @@ return {
       lspconfig.jsonls.setup({
         capabilities = capabilities,
       })
+      lspconfig.html.setup({
+        capabilities = capabilities,
+      })
+      lspconfig.cssls.setup({
+        capabilities = capabilities,
+      })
+      lspconfig.jsonls.setup({
+        capabilities = capabilities,
+      })
 
+      lspconfig.neocmake.setup({
+        capabilities = capabilities,
+      })
       lspconfig.neocmake.setup({
         capabilities = capabilities,
       })
