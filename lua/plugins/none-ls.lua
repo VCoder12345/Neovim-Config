@@ -10,6 +10,7 @@ return {
         null_ls.builtins.diagnostics.ruff,
         null_ls.builtins.diagnostics.cmake_lint,
         null_ls.builtins.formatting.clang_format,
+        null_ls.builtins.formatting.ocamlformat,
 			},
 		})
 

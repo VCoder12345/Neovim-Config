@@ -24,6 +24,8 @@ keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 keymap.set("v", "<", "<gv")
 keymap.set("v", ">", ">gv")
 
+keymap.set("n", "<leader>g", "<C-o>", {desc = "go back"});
+
 --buffers
 keymap.set("n", "<TAB>", ":bn<CR>")
 keymap.set("n", "<S-TAB>", ":bp<CR>")
