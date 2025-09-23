@@ -26,6 +26,7 @@ return {
         "neocmake",
         "slangd",
         "pyright",
+        -- "ruff",
       },
     },
     dependencies = {
@@ -50,14 +51,7 @@ return {
       lspconfig.lua_ls.setup({
         capabilities = capabilities,
       })
-      local lspconfig = require("lspconfig")
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-      })
 
-      lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
-      })
       lspconfig.rust_analyzer.setup({
         capabilities = capabilities,
       })
@@ -93,59 +87,12 @@ return {
           )(fname) or require("lspconfig.util").find_git_ancestor(fname)
         end,
       })
-      lspconfig.clangd.setup({
-        capabilities = capabilities,
-        cmd = {
-          "clangd",
-          "--background-index",
-          "--clang-tidy",
-          "--header-insertion=iwyu",
-          "--completion-style=detailed",
-          "--function-arg-placeholders",
-          "--fallback-style=llvm",
-        },
-        init_options = {
-          usePlaceholders = true,
-          completeUnimported = true,
-          clangdFileStatus = true,
-        },
-        root_dir = function(fname)
-          return require("lspconfig.util").root_pattern(
-            "Makefile",
-            "configure.ac",
-            "configure.in",
-            "config.h.in",
-            "meson.build",
-            "meson_options.txt",
-            "build.ninja"
-          )(fname) or require("lspconfig.util").root_pattern(
-            "compile_commands.json",
-            "compile_flags.txt"
-          )(fname) or require("lspconfig.util").find_git_ancestor(fname)
-        end,
-      })
 
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-      })
       lspconfig.ts_ls.setup({
         capabilities = capabilities,
       })
 
       lspconfig.angularls.setup({
-        capabilities = capabilities,
-      })
-      lspconfig.angularls.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.html.setup({
-        capabilities = capabilities,
-      })
-      lspconfig.cssls.setup({
-        capabilities = capabilities,
-      })
-      lspconfig.jsonls.setup({
         capabilities = capabilities,
       })
       lspconfig.html.setup({
@@ -155,10 +102,6 @@ return {
         capabilities = capabilities,
       })
       lspconfig.jsonls.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.neocmake.setup({
         capabilities = capabilities,
       })
       lspconfig.neocmake.setup({
@@ -172,6 +115,10 @@ return {
       lspconfig.pyright.setup({
         capabilities = capabilities,
       })
+
+      -- lspconfig.ruff.setup({
+      --   capabilities = capabilities,
+      -- })
       local keymap = vim.keymap
       keymap.set("n", "K", vim.lsp.buf.hover, { desc = "lsp hover info" })
       keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "lsp go to def." })
