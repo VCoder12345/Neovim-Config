@@ -16,6 +16,14 @@ return {
       },
     })
 
+    local Rule = require("nvim-autopairs.rule")
+    autopairs.remove_rule("'") -- remove globally
+
+    -- Add it back for all filetypes *except* OCaml
+    autopairs.add_rule(Rule("'", "'"):with_pair(function(opts)
+      return vim.bo.filetype ~= "ocaml"
+    end))
+
     local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 
     local cmp = require("cmp")

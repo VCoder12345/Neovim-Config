@@ -26,6 +26,17 @@ keymap.set("v", ">", ">gv")
 
 keymap.set("n", "<leader>g", "<C-o>", {desc = "go back"});
 
+keymap.set("v", "<leader>y", '"+y', {desc = "yank selection to clipboard"})
+keymap.set("n", "<leader>Y", '"+yg_', {desc = "yank to clipboard"})
+keymap.set("n", "<leader>y", '"+y', {desc = "yank to clipboard"})
+keymap.set("n", "<leader>yy", '"+yy', {desc = "yank line to clipboard"})
+
+keymap.set("n", "<leader>p", '"+p', {desc = "paste from clipboard"})
+keymap.set("n", "<leader>P", '"+P', {desc = "paste from clipboard"})
+keymap.set("v", "<leader>p", '"+p', {desc = "paste from clipboard"})
+keymap.set("v", "<leader>P", '"+P', {desc = "paste from clipboard"})
+
+
 --buffers
 keymap.set("n", "<TAB>", ":bn<CR>")
 keymap.set("n", "<S-TAB>", ":bp<CR>")
