@@ -24,7 +24,34 @@ keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 keymap.set("v", "<", "<gv")
 keymap.set("v", ">", ">gv")
 
-keymap.set("n", "<leader>g", "<C-o>", {desc = "go back"});
+keymap.set("n", "<leader>gg", "<C-o>", {desc = "go back"});
+keymap.set("n", "<CR>", "o<Esc>");
+keymap.set("n", "<leader>O", "O<Esc>");
+
+keymap.set("v", "<leader>y", '"+y', {desc = "yank selection to clipboard"})
+keymap.set("n", "<leader>Y", '"+yg_', {desc = "yank to clipboard"})
+keymap.set("n", "<leader>y", '"+y', {desc = "yank to clipboard"})
+keymap.set("n", "<leader>yy", '"+yy', {desc = "yank line to clipboard"})
+
+keymap.set("n", "<leader>p", '"+p', {desc = "paste from clipboard"})
+keymap.set("n", "<leader>P", '"+P', {desc = "paste from clipboard"})
+keymap.set("v", "<leader>p", '"+p', {desc = "paste from clipboard"})
+keymap.set("v", "<leader>P", '"+P', {desc = "paste from clipboard"})
+
+-- making coding faster by replacing unused characters often used ones
+local feed = vim.api.nvim_feedkeys
+local function imap_insert(lhs, rhs)
+    vim.keymap.set("i", lhs, function()
+        feed(rhs, "i", false)
+    end)
+end
+
+imap_insert("ö", ";")
+imap_insert("ä", "{")
+imap_insert("$", "}")
+imap_insert("ü", "[")
+imap_insert("¨", "]")
+
 
 keymap.set("v", "<leader>y", '"+y', {desc = "yank selection to clipboard"})
 keymap.set("n", "<leader>Y", '"+yg_', {desc = "yank to clipboard"})
