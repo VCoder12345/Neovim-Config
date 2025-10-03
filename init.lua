@@ -16,11 +16,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.diagnostic.config({
-	virtual_text = true,
-	underline = true,
-	update_in_insert = false,
-})
+
 
 vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertLeave" }, {
 	callback = function()
@@ -30,5 +26,6 @@ vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertL
 })
 require("lazy").setup("plugins")
 require("vim-options")
+require("lsp")
 require("custom/genCpp")
 require("custom/fastCmake")
