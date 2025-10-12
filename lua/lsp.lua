@@ -1,17 +1,21 @@
 vim.lsp.enable({
-	"clangd",
+  "clangd",
   "lua_ls",
   "ocamllsp",
+  "ty",
   "pyright",
+  "ts_ls",
+  "cssls",
+  "jsonls",
+  "html_ls",
 })
 
 vim.diagnostic.config({
-	-- virtual_lines = true,
-	virtual_text = true,
-	underline = true,
-	update_in_insert = false,
+  -- virtual_lines = true,
+  virtual_text = true,
+  underline = true,
+  update_in_insert = false,
 })
-
 
 local keymap = vim.keymap
 keymap.set("n", "K", vim.lsp.buf.hover, { desc = "lsp hover info" })
