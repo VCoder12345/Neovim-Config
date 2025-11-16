@@ -38,6 +38,9 @@ keymap.set("n", "<leader>P", '"+P', {desc = "paste from clipboard"})
 keymap.set("v", "<leader>p", '"+p', {desc = "paste from clipboard"})
 keymap.set("v", "<leader>P", '"+P', {desc = "paste from clipboard"})
 
+keymap.set("n", "ü", "^")
+keymap.set("v", "ü", "^")
+
 -- making coding faster by replacing unused characters often used ones
 local feed = vim.api.nvim_feedkeys
 local function imap_insert(lhs, rhs)
