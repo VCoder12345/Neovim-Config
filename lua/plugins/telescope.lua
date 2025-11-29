@@ -13,6 +13,8 @@ return {
       vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
       vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
       vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Telescope diagnostics" })
+      vim.keymap.set("n", "<leader>fc", builtin.git_commits, { desc = "Telescope commits" })
+      vim.keymap.set("n", "<leader>fr", builtin.current_buffer_fuzzy_find, { desc = "Telescope grep on current file" })
 
       vim.keymap.set("n", "<leader>fs", function()
         builtin.lsp_document_symbols({
