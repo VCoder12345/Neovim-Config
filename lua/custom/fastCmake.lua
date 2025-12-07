@@ -1,7 +1,7 @@
 vim.api.nvim_create_user_command("Configure", function()
   vim.cmd("!cmake -S . -B build -G Ninja "
-    .. "-DCMAKE_C_COMPILER=clang "
-    .. "-DCMAKE_CXX_COMPILER=clang++ "
+    .. "-DCMAKE_C_COMPILER=gcc "
+    .. "-DCMAKE_CXX_COMPILER=g++ "
     .. "-DCMAKE_BUILD_TYPE=Debug "
     .. "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
 end, {})
