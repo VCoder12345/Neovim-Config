@@ -22,7 +22,9 @@ local function choose_location(callback)
   }
 
   vim.ui.select(options, { prompt = "Choose location:" }, function(choice)
-    if not choice then return end
+    if not choice then
+      return
+    end
 
     if choice == "Current folder" then
       local current_dir = get_current_folder()
@@ -63,10 +65,14 @@ local function make_class()
   local options = { "Class (.h + .cpp)", "Header Only (.h)", "Qt Class (.h + .cpp)" }
 
   vim.ui.select(options, { prompt = "Choose template type:" }, function(choice)
-    if not choice then return end
+    if not choice then
+      return
+    end
 
     vim.ui.input({ prompt = "Enter class name: " }, function(name)
-      if not name or name == "" then return end
+      if not name or name == "" then
+        return
+      end
 
       choose_location(function(header_dir, source_dir)
         vim.fn.mkdir(header_dir, "p")
@@ -87,7 +93,8 @@ local function make_class()
 
         -- ================== QT CLASS ==================
         if choice:find("Qt Class") then
-          header = string.format([[
+          header = string.format(
+            [[
 #pragma once
 #include <QObject>
 
@@ -98,20 +105,32 @@ public:
     explicit %s(QObject *parent = nullptr);
     ~%s();
 };
-]], name, name, name)
+]],
+            name,
+            name,
+            name
+          )
 
-          source = string.format([[
+          source = string.format(
+            [[
 #include "%s.h"
 
 %s::%s(QObject *parent)
     : QObject(parent) {}
 
 %s::~%s() {}
-]], include_path, name, name, name, name)
+]],
+            include_path,
+            name,
+            name,
+            name,
+            name
+          )
 
-        -- ================== STANDARD CLASS ==================
+          -- ================== STANDARD CLASS ==================
         elseif choice:find("Class") then
-          header = string.format([[
+          header = string.format(
+            [[
 #pragma once
 
 class %s {
@@ -119,19 +138,31 @@ public:
     %s();
     ~%s();
 };
-]], name, name, name)
+]],
+            name,
+            name,
+            name
+          )
 
-          source = string.format([[
+          source = string.format(
+            [[
 #include "%s.h"
 
 %s::%s() {}
 
 %s::~%s() {}
-]], include_path, name, name, name, name)
+]],
+            include_path,
+            name,
+            name,
+            name,
+            name
+          )
 
-        -- ================== HEADER ONLY ==================
+          -- ================== HEADER ONLY ==================
         elseif choice:find("Header Only") then
-          header = string.format([[
+          header = string.format(
+            [[
 #pragma once
 
 class %s {
@@ -139,7 +170,11 @@ public:
     %s() {}
     ~%s() {}
 };
-]], name, name, name)
+]],
+            name,
+            name,
+            name
+          )
         end
 
         -- Build file paths
@@ -161,9 +196,11 @@ public:
         end
 
         -- Open files in Neovim
-        vim.cmd("edit " .. header_path)
         if source ~= "" then
-          vim.cmd("vsplit " .. source_path)
+          vim.cmd("edit " .. source_path)
+          vim.cmd("vsplit " .. header_path)
+        else
+          vim.cmd("edit " .. header_path)
         end
 
         print("Created class " .. name)
@@ -177,7 +214,60 @@ public:
   end)
 end
 
+-- ================================
+-- Delete class (.h and .cpp)
+-- ================================
+
+local function delete_class()
+  vim.ui.input({ prompt = "Enter class name to delete: " }, function(name)
+    if not name or name == "" then
+      return
+    end
+
+    choose_location(function(header_dir, source_dir)
+      local header_path = string.format("%s/%s.h", header_dir, name)
+      local source_path = string.format("%s/%s.cpp", source_dir, name)
+
+      local files_to_delete = {}
+      if vim.fn.filereadable(header_path) == 1 then
+        table.insert(files_to_delete, header_path)
+      end
+      if vim.fn.filereadable(source_path) == 1 then
+        table.insert(files_to_delete, source_path)
+      end
+
+      if #files_to_delete == 0 then
+        print("No class files found for: " .. name)
+        return
+      end
+
+      local prompt = "Delete the following files?\n"
+      for _, f in ipairs(files_to_delete) do
+        prompt = prompt .. "  - " .. f .. "\n"
+      end
+
+      vim.ui.select({ "Yes", "No" }, { prompt = prompt }, function(choice)
+        if choice ~= "Yes" then
+          return
+        end
+
+        for _, f in ipairs(files_to_delete) do
+          vim.fn.delete(f)
+        end
+
+        print("Deleted class " .. name)
+        for _, f in ipairs(files_to_delete) do
+          print("  Removed: " .. f)
+        end
+      end)
+    end)
+  end)
+end
+
+-- Command + keymap
+vim.api.nvim_create_user_command("DeleteClass", delete_class, {})
+vim.keymap.set("n", "<leader>md", delete_class, { desc = "Delete a C++ class (header/source)" })
+
 -- Create command and keymap
 vim.api.nvim_create_user_command("MakeClass", make_class, {})
 vim.keymap.set("n", "<leader>mc", make_class, { desc = "Make new C++ class from template" })
-

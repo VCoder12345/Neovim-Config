@@ -17,6 +17,9 @@ opt.smartcase = true
 
 opt.signcolumn = "yes"
 
+opt.fileformat = "unix"
+opt.fileformats = {"unix", "dos"}
+
 
 --opt.clipboard:append("unnamedplus") -- use system clipboard as default register
 
