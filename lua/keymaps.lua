@@ -6,6 +6,10 @@ keymap.set("n", "<C-h>", "<C-w>h", {desc = "moving to left window"})
 keymap.set("n", "<C-j>", "<C-w>j", {desc = "moving to lower window"})
 keymap.set("n", "<C-k>", "<C-w>k", {desc = "moving to upper window"})
 keymap.set("n", "<C-l>", "<C-w>l", {desc = "moving to right window"})
+keymap.set("n", "<leader>wh", "<C-w>H", {desc = "moving window to the left"})
+keymap.set("n", "<leader>wj", "<C-w>J", {desc = "moving window up"})
+keymap.set("n", "<leader>wk", "<C-w>K", {desc = "moving window down"})
+keymap.set("n", "<leader>wl", "<C-w>L", {desc = "moving window to the right"})
 
 keymap.set("n", "<leader>nh", ":nohl<CR>", {desc = "Clear search highlights"})
 

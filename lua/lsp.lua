@@ -8,6 +8,7 @@ vim.lsp.enable({
   "cssls",
   "jsonls",
   "html_ls",
+  "neocmake"
 })
 
 vim.diagnostic.config({
@@ -27,4 +28,5 @@ keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", { desc = "show L
 keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", { desc = "show LSP type definitions" })
 keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Smart rename" })
 keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", { desc = "show buffer diagnostics" })
+keymap.set("n", "<leader>he", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "switch source/header" })
 

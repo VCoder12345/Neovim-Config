@@ -1,62 +1,100 @@
-local function detect_project_name()
-  local cmake = io.open("CMakeLists.txt", "r")
-  if not cmake then return nil end
+-- ============================================
+-- Interactive C++ Class Generator (CMake-aware)
+-- ============================================
 
-  for line in cmake:lines() do
-    local name = line:match("project%s*%(%s*([%w_%-]+)")
-    if name then
-      cmake:close()
-      return name
+-- Get the "current folder" in a robust way
+local function get_current_folder()
+  local bufname = vim.api.nvim_buf_get_name(0)
+  if bufname == "" then
+    -- Empty buffer, fallback to current working directory
+    return vim.fn.getcwd()
+  else
+    -- Take the directory containing the current file
+    return vim.fn.fnamemodify(bufname, ":p:h")
+  end
+end
+
+-- Select between CMake auto-detection and current folder
+local function choose_location(callback)
+  local options = {
+    "Auto-detect (CMake layout)",
+    "Current folder",
+  }
+
+  vim.ui.select(options, { prompt = "Choose location:" }, function(choice)
+    if not choice then
+      return
     end
-  end
-  cmake:close()
-  return nil
+
+    if choice == "Current folder" then
+      local current_dir = get_current_folder()
+      callback(current_dir, current_dir)
+      return
+    end
+
+    -- Auto-detect CMake-style include/src
+    local header_dir = "."
+    local source_dir = "."
+
+    if vim.fn.isdirectory("include") == 1 then
+      local entries = vim.fn.readdir("include")
+      local subdir = nil
+      for _, entry in ipairs(entries) do
+        if vim.fn.isdirectory("include/" .. entry) == 1 then
+          subdir = entry
+          break
+        end
+      end
+      if subdir then
+        header_dir = "include/" .. subdir
+      else
+        header_dir = "include"
+      end
+    end
+
+    if vim.fn.isdirectory("src") == 1 then
+      source_dir = "src"
+    end
+
+    callback(header_dir, source_dir)
+  end)
 end
 
-local function dir_exists(path)
-  return vim.fn.isdirectory(path) == 1
-end
-
-local function detect_paths()
-  local project = detect_project_name()
-
-  local header_dir = "."
-  local source_dir = "."
-
-  -- Prefer CMake-style include/project_name/
-  if project and dir_exists("include/" .. project) then
-    header_dir = "include/" .. project
-  elseif dir_exists("include") then
-    header_dir = "include"
-  end
-
-  -- Standard CMake src/
-  if dir_exists("src") then
-    source_dir = "src"
-  end
-
-  return header_dir, source_dir
-end
-
+-- Main class generator
 local function make_class()
   local options = { "Class (.h + .cpp)", "Header Only (.h)", "Qt Class (.h + .cpp)" }
 
   vim.ui.select(options, { prompt = "Choose template type:" }, function(choice)
-    if not choice then return end
+    if not choice then
+      return
+    end
 
     vim.ui.input({ prompt = "Enter class name: " }, function(name)
-      if not name or name == "" then return end
+      if not name or name == "" then
+        return
+      end
 
-      local header_dir, source_dir = detect_paths()
-      vim.fn.mkdir(header_dir, "p")
-      vim.fn.mkdir(source_dir, "p")
+      choose_location(function(header_dir, source_dir)
+        vim.fn.mkdir(header_dir, "p")
+        vim.fn.mkdir(source_dir, "p")
 
-      local ext = "h"
-      local header, source = "", ""
+        local ext = "h"
+        local header, source = "", ""
 
-      -- Templates
-      if choice:find("Qt Class") then
-        header = string.format([[
+        -- Determine include path relative to 'include' folder
+        local include_path = name -- default: just the filename
+        local include_root = "include"
+        if header_dir:sub(1, #include_root) == include_root then
+          local relative = header_dir:sub(#include_root + 2) -- remove "include/"
+          if relative ~= "" then
+            include_path = relative .. "/" .. name
+          end
+        end
+
+        -- ================== QT CLASS ==================
+        if choice:find("Qt Class") then
+          header = string.format(
+            [[
 #pragma once
 #include <QObject>
 
@@ -67,20 +105,32 @@ public:
     explicit %s(QObject *parent = nullptr);
     ~%s();
 };
-]], name, name, name)
+]],
+            name,
+            name,
+            name
+          )
 
-        source = string.format([[
-#include "%s.%s"
+          source = string.format(
+            [[
+#include "%s.h"
 
 %s::%s(QObject *parent)
-    : QObject(parent) {
-}
+    : QObject(parent) {}
 
 %s::~%s() {}
-]], name, ext, name, name, name, name)
+]],
+            include_path,
+            name,
+            name,
+            name,
+            name
+          )
 
-      elseif choice:find("Class") then
-        header = string.format([[
+          -- ================== STANDARD CLASS ==================
+        elseif choice:find("Class") then
+          header = string.format(
+            [[
 #pragma once
 
 class %s {
@@ -88,18 +138,31 @@ public:
     %s();
     ~%s();
 };
-]], name, name, name)
+]],
+            name,
+            name,
+            name
+          )
 
-        source = string.format([[
-#include "%s.%s"
+          source = string.format(
+            [[
+#include "%s.h"
 
 %s::%s() {}
 
 %s::~%s() {}
-]], name, ext, name, name, name, name)
+]],
+            include_path,
+            name,
+            name,
+            name,
+            name
+          )
 
-      elseif choice:find("Header Only") then
-        header = string.format([[
+          -- ================== HEADER ONLY ==================
+        elseif choice:find("Header Only") then
+          header = string.format(
+            [[
 #pragma once
 
 class %s {
@@ -107,41 +170,105 @@ public:
     %s() {}
     ~%s() {}
 };
-]], name, name, name)
-      end
+]],
+            name,
+            name,
+            name
+          )
+        end
 
-      -- Paths
-      local header_path = string.format("%s/%s.%s", header_dir, name, ext)
-      local source_path = string.format("%s/%s.cpp", source_dir, name)
+        -- Build file paths
+        local header_path = string.format("%s/%s.%s", header_dir, name, ext)
+        local source_path = string.format("%s/%s.cpp", source_dir, name)
 
-      -- Write files
-      if header ~= "" then
-        local f = io.open(header_path, "w")
-        f:write(header)
-        f:close()
-      end
+        -- Write header
+        if header ~= "" then
+          local h = io.open(header_path, "w")
+          h:write(header)
+          h:close()
+        end
 
-      if source ~= "" then
-        local f = io.open(source_path, "w")
-        f:write(source)
-        f:close()
-      end
+        -- Write source
+        if source ~= "" then
+          local c = io.open(source_path, "w")
+          c:write(source)
+          c:close()
+        end
 
-      -- Open them
-      vim.cmd("edit " .. header_path)
-      if source ~= "" then
-        vim.cmd("vsplit " .. source_path)
-      end
+        -- Open files in Neovim
+        if source ~= "" then
+          vim.cmd("edit " .. source_path)
+          vim.cmd("vsplit " .. header_path)
+        else
+          vim.cmd("edit " .. header_path)
+        end
 
-      print("Created class " .. name .. " in:")
-      print("  Header: " .. header_dir)
-      if source ~= "" then
-        print("  Source: " .. source_dir)
-      end
+        print("Created class " .. name)
+        print("  Header: " .. header_path)
+        if source ~= "" then
+          print("  Source: " .. source_path)
+          print("  #include in source: " .. include_path .. ".h")
+        end
+      end)
     end)
   end)
 end
 
+-- ================================
+-- Delete class (.h and .cpp)
+-- ================================
+
+local function delete_class()
+  vim.ui.input({ prompt = "Enter class name to delete: " }, function(name)
+    if not name or name == "" then
+      return
+    end
+
+    choose_location(function(header_dir, source_dir)
+      local header_path = string.format("%s/%s.h", header_dir, name)
+      local source_path = string.format("%s/%s.cpp", source_dir, name)
+
+      local files_to_delete = {}
+      if vim.fn.filereadable(header_path) == 1 then
+        table.insert(files_to_delete, header_path)
+      end
+      if vim.fn.filereadable(source_path) == 1 then
+        table.insert(files_to_delete, source_path)
+      end
+
+      if #files_to_delete == 0 then
+        print("No class files found for: " .. name)
+        return
+      end
+
+      local prompt = "Delete the following files?\n"
+      for _, f in ipairs(files_to_delete) do
+        prompt = prompt .. "  - " .. f .. "\n"
+      end
+
+      vim.ui.select({ "Yes", "No" }, { prompt = prompt }, function(choice)
+        if choice ~= "Yes" then
+          return
+        end
+
+        for _, f in ipairs(files_to_delete) do
+          vim.fn.delete(f)
+        end
+
+        print("Deleted class " .. name)
+        for _, f in ipairs(files_to_delete) do
+          print("  Removed: " .. f)
+        end
+      end)
+    end)
+  end)
+end
+
+-- Command + keymap
+vim.api.nvim_create_user_command("DeleteClass", delete_class, {})
+vim.keymap.set("n", "<leader>md", delete_class, { desc = "Delete a C++ class (header/source)" })
+
+-- Create command and keymap
 vim.api.nvim_create_user_command("MakeClass", make_class, {})
 vim.keymap.set("n", "<leader>mc", make_class)
 
