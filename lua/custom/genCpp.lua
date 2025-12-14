@@ -1,25 +1,63 @@
--- =========================
--- Interactive C++ Class Generator
--- =========================
+local function detect_project_name()
+  local cmake = io.open("CMakeLists.txt", "r")
+  if not cmake then return nil end
+
+  for line in cmake:lines() do
+    local name = line:match("project%s*%(%s*([%w_%-]+)")
+    if name then
+      cmake:close()
+      return name
+    end
+  end
+  cmake:close()
+  return nil
+end
+
+local function dir_exists(path)
+  return vim.fn.isdirectory(path) == 1
+end
+
+local function detect_paths()
+  local project = detect_project_name()
+
+  local header_dir = "."
+  local source_dir = "."
+
+  -- Prefer CMake-style include/project_name/
+  if project and dir_exists("include/" .. project) then
+    header_dir = "include/" .. project
+  elseif dir_exists("include") then
+    header_dir = "include"
+  end
+
+  -- Standard CMake src/
+  if dir_exists("src") then
+    source_dir = "src"
+  end
+
+  return header_dir, source_dir
+end
+
 local function make_class()
   local options = { "Class (.h + .cpp)", "Header Only (.h)", "Qt Class (.h + .cpp)" }
 
   vim.ui.select(options, { prompt = "Choose template type:" }, function(choice)
     if not choice then return end
 
-    -- Ask for class name
     vim.ui.input({ prompt = "Enter class name: " }, function(name)
       if not name or name == "" then return end
 
-      local ext = "h"
-      local header = ""
-      local source = ""
+      local header_dir, source_dir = detect_paths()
+      vim.fn.mkdir(header_dir, "p")
+      vim.fn.mkdir(source_dir, "p")
 
-      -- ================== QT CLASS ==================
+      local ext = "h"
+      local header, source = "", ""
+
+      -- Templates
       if choice:find("Qt Class") then
         header = string.format([[
 #pragma once
-
 #include <QObject>
 
 class %s : public QObject {
@@ -28,7 +66,6 @@ class %s : public QObject {
 public:
     explicit %s(QObject *parent = nullptr);
     ~%s();
-
 };
 ]], name, name, name)
 
@@ -39,11 +76,9 @@ public:
     : QObject(parent) {
 }
 
-%s::~%s() {
-}
+%s::~%s() {}
 ]], name, ext, name, name, name, name)
 
-      -- ================== STANDARD CLASS ==================
       elseif choice:find("Class") then
         header = string.format([[
 #pragma once
@@ -52,21 +87,17 @@ class %s {
 public:
     %s();
     ~%s();
-
 };
 ]], name, name, name)
 
         source = string.format([[
 #include "%s.%s"
 
-%s::%s() {
-}
+%s::%s() {}
 
-%s::~%s() {
-}
+%s::~%s() {}
 ]], name, ext, name, name, name, name)
 
-      -- ================== HEADER ONLY ==================
       elseif choice:find("Header Only") then
         header = string.format([[
 #pragma once
@@ -75,45 +106,42 @@ class %s {
 public:
     %s() {}
     ~%s() {}
-
 };
 ]], name, name, name)
       end
 
-      local hasHeader = header ~= ""
-      local hasSource = source ~= ""
+      -- Paths
+      local header_path = string.format("%s/%s.%s", header_dir, name, ext)
+      local source_path = string.format("%s/%s.cpp", source_dir, name)
 
-      -- Write header file
-      if hasHeader then
-        local h_file = name .. "." .. ext
-        local h = io.open(h_file, "w")
-        h:write(header)
-        h:close()
+      -- Write files
+      if header ~= "" then
+        local f = io.open(header_path, "w")
+        f:write(header)
+        f:close()
       end
 
-      -- Write source file
-      if hasSource then
-        local cpp_file = name .. ".cpp"
-        local cpp = io.open(cpp_file, "w")
-        cpp:write(source)
-        cpp:close()
+      if source ~= "" then
+        local f = io.open(source_path, "w")
+        f:write(source)
+        f:close()
       end
 
-      -- Open files in Neovim
-      if hasHeader and hasSource then
-        vim.cmd("edit " .. name .. "." .. ext)
-        vim.cmd("vsplit " .. name .. ".cpp")
-        print("Created " .. name .. "." .. ext .. " and " .. name .. ".cpp")
-      elseif hasHeader then
-        vim.cmd("edit " .. name .. "." .. ext)
-        print("Created " .. name .. "." .. ext)
-      elseif hasSource then
-        vim.cmd("edit " .. name .. ".cpp")
-        print("Created " .. name .. ".cpp")
+      -- Open them
+      vim.cmd("edit " .. header_path)
+      if source ~= "" then
+        vim.cmd("vsplit " .. source_path)
+      end
+
+      print("Created class " .. name .. " in:")
+      print("  Header: " .. header_dir)
+      if source ~= "" then
+        print("  Source: " .. source_dir)
       end
     end)
   end)
 end
 
 vim.api.nvim_create_user_command("MakeClass", make_class, {})
-vim.keymap.set("n", "<leader>mc", make_class, { desc = "Make new C++ class from template" })
+vim.keymap.set("n", "<leader>mc", make_class)
+

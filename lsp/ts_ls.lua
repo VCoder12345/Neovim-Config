@@ -7,6 +7,7 @@ return {
 		"--stdio",
 	},
 	filetypes = {
+    "javascript",
 		"typescript",
 		"typescript.tsx",
 		"typescriptreact",
