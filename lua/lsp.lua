@@ -29,4 +29,5 @@ keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", { desc = "show 
 keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Smart rename" })
 keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", { desc = "show buffer diagnostics" })
 keymap.set("n", "<leader>he", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "switch source/header" })
+keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 
