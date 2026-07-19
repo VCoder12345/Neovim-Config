@@ -8,7 +8,8 @@ vim.lsp.enable({
   "cssls",
   "jsonls",
   "html_ls",
-  "neocmake"
+  "neocmake",
+  "glsl_analyzer" 
 })
 
 vim.diagnostic.config({

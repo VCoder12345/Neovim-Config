@@ -42,6 +42,7 @@ keymap.set("n", "<leader>p", '"+p', {desc = "paste from clipboard"})
 keymap.set("n", "<leader>P", '"+P', {desc = "paste from clipboard"})
 keymap.set("v", "<leader>p", '"+p', {desc = "paste from clipboard"})
 keymap.set("v", "<leader>P", '"+P', {desc = "paste from clipboard"})
+keymap.set("n", "<leader>yA", ':%y+<CR>', { desc = "yank entire file to clipboard" })
 
 
 keymap.set("n", "ü", "^")

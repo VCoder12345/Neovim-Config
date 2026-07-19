@@ -1,7 +1,8 @@
 local dap = require("dap")
-local install_root_dir = vim.fn.stdpath("data") .. "\\mason"
-local extension_path = install_root_dir .. "\\packages\\codelldb\\extension\\"
-local codelldb_path = extension_path .. "adapter\\codelldb"
+-- local install_root_dir = vim.fn.stdpath("data") .. "\\mason"
+-- local extension_path = install_root_dir .. "\\packages\\codelldb\\extension\\"
+-- local codelldb_path = extension_path .. "adapter\\codelldb"
+local codelldb_path = "codelldb"  -- Assumes codelldb is in your PATH
 -- local last_cmd = vim.fn.getcwd() .. "\\"
 
 dap.adapters.codelldb = {
