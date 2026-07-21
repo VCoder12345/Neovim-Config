@@ -9,7 +9,22 @@ vim.lsp.enable({
   "jsonls",
   "html_ls",
   "neocmake",
-  "glsl_analyzer" 
+  "glsl_analyzer"
+})
+
+vim.filetype.add({
+  extension = {
+    vert = "glsl",
+    frag = "glsl",
+    comp = "glsl",
+    geom = "glsl",
+    tesc = "glsl",
+    tese = "glsl",
+
+    -- Your custom extensions
+    vs = "glsl",
+    fs = "glsl",
+  },
 })
 
 vim.diagnostic.config({
