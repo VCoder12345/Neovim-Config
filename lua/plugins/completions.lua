@@ -5,8 +5,16 @@ return {
   {
     "hrsh7th/cmp-nvim-lsp",
   },
+  -- {
+  --   "hrsh7th/cmp-nvim-lsp-signature-help",
+  -- },
   {
-    "hrsh7th/cmp-nvim-lsp-signature-help",
+    "ray-x/lsp_signature.nvim",
+    event = "InsertEnter",
+    opts = {
+      floating_window = true,
+      hint_enable = true,
+    },
   },
   {
     "L3MON4D3/LuaSnip",
@@ -64,8 +72,8 @@ return {
           end, { "i", "s" }),
         }),
         sources = cmp.config.sources({
-          { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
+          -- { name = "nvim_lsp_signature_help" },
           --{ name = "vsnip" }, -- For vsnip users.
           { name = "luasnip" }, -- For luasnip users.
           { name = "copilot" },
