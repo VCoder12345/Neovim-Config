@@ -66,3 +66,11 @@ imap_insert("¨", "]")
 --buffers
 keymap.set("n", "<TAB>", ":bn<CR>")
 keymap.set("n", "<S-TAB>", ":bp<CR>")
+
+vim.keymap.set("n", "<leader>ut", function()
+  if vim.o.background == "dark" then
+    vim.o.background = "light"
+  else
+    vim.o.background = "dark"
+  end
+end, { desc = "Toggle light/dark mode" })

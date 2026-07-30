@@ -4,6 +4,7 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
+      "lewis6991/async.nvim",
     },
     lazy = false,
     opts = {},
@@ -15,7 +16,7 @@ return {
 
         prompt_func_param_type = {
           cpp = true,
-        }
+        },
       })
 
       local km = vim.keymap
@@ -32,13 +33,9 @@ return {
       km.set("n", "<leader>rb", ":Refactor extract_block")
       km.set("n", "<leader>rbf", ":Refactor extract_block_to_file")
 
-      km.set(
-        { "n", "x" },
-        "<leader>rr",
-        function()
-          require('telescope').extensions.refactoring.refactors()
-        end
-      )
-    end
+      km.set({ "n", "x" }, "<leader>rr", function()
+        require("telescope").extensions.refactoring.refactors()
+      end)
+    end,
   },
 }

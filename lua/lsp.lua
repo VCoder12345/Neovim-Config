@@ -9,7 +9,8 @@ vim.lsp.enable({
   "jsonls",
   "html_ls",
   "neocmake",
-  "glsl_analyzer"
+  "glsl_analyzer",
+  "slang",
 })
 
 vim.filetype.add({
@@ -24,8 +25,17 @@ vim.filetype.add({
     -- Your custom extensions
     vs = "glsl",
     fs = "glsl",
+    slang = "shaderslang",
+    slangh = "shaderslang",
   },
 })
+
+vim.opt.foldcolumn = "0"
+vim.opt.foldtext = ""
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+
+
 
 vim.diagnostic.config({
   -- virtual_lines = true,
@@ -46,4 +56,3 @@ keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Smart rename" })
 keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", { desc = "show buffer diagnostics" })
 keymap.set("n", "<leader>he", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "switch source/header" })
 keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-
