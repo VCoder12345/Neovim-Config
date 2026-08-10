@@ -29,14 +29,14 @@ require("lsp")
 require("custom/genCpp")
 require("custom/fastCmake")
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "cpp",
-  callback = function()
-    vim.opt_local.indentexpr = ""
-    vim.opt_local.cindent = true
-    vim.opt_local.smartindent = false
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "cpp",
+--   callback = function()
+--     vim.opt_local.indentexpr = ""
+--     vim.opt_local.cindent = true
+--     vim.opt_local.smartindent = false
+--   end,
+-- })
 
 
 
